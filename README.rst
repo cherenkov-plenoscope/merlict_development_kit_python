@@ -3,7 +3,7 @@ merlict_development_kit_python
 ##############################
 |TestStatus| |PyPiStatus| |BlackStyle| |BlackPackStyle| |MITLicenseBadge|
 
-Lorem ipsum...
+A python package to ease the call of the executables in the ``merlict_development_kit``.
 
 .. |TestStatus| image:: https://github.com/cherenkov-plenoscope/merlict_development_kit_python/actions/workflows/test.yml/badge.svg?branch=main
     :target: https://github.com/cherenkov-plenoscope/merlict_development_kit_python/actions/workflows/test.yml
