@@ -5,19 +5,14 @@ import os
 with open("README.rst", "r", encoding="utf-8") as f:
     long_description = f.read()
 
-with open(
-    os.path.join(
-        "merlict_development_kit_python_cherenkov-plenoscope-project",
-        "version.py",
-    )
-) as f:
+with open(os.path.join("merlict_development_kit_python", "version.py")) as f:
     txt = f.read()
     last_line = txt.splitlines()[-1]
     version_string = last_line.split()[-1]
     version = version_string.strip("\"'")
 
 setuptools.setup(
-    name="merlict_development_kit_python",
+    name="merlict_development_kit_python_cherenkov-plenoscope-project",
     version=version,
     description=(
         "A python package to ease the call of executables in "
