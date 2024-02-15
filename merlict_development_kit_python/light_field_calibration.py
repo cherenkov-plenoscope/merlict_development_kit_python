@@ -1,15 +1,16 @@
 import numpy as np
 import subprocess
 import os
+from . import configfile
 
 
 def make_jobs(
-    merlict_map_path,
     scenery_path,
     num_photons_per_block,
     map_dir,
     num_blocks,
     random_seed=0,
+    merlict_map_path=None,
 ):
     """
     Returns a list of jobs (dicts) which can be processed by run_job().
@@ -18,8 +19,6 @@ def make_jobs(
 
     Parameters
     ----------
-    merlict_map_path : str
-        Path to the executable. In merlict, executing one job.
     scenery_path : str
         Path to the scenery containing the instrument of which the
         light-field's geometry will be estimated of.
@@ -32,7 +31,15 @@ def make_jobs(
         The number of jobs.
     random_seed : int
         The random_seed for the estimate.
+    merlict_map_path : str (default: None)
+        Path to the executable. In merlict, executing one job.
+        If None, the path is looked up in the user's configfile.
     """
+    if merlict_map_path is None:
+        merlict_map_path = configfile.read()[
+            "merlict-plenoscope-calibration-map"
+        ]
+
     jobs = []
     running_seed = int(random_seed)
 
@@ -74,21 +81,28 @@ def run_job(job):
     return subprocess.call(call)
 
 
-def reduce(merlict_reduce_path, map_dir, out_dir):
+def reduce(map_dir, out_dir, merlict_reduce_path=None):
     """
     Reduce the intermediate results in the map_dir and write them to the
     out_dir.
 
     Parameters
     ----------
-    merlict_reduce_path : str
-        Path to the executable. In merlict, reducing the results of the jobs.
+
     map_dir : str
         Path to the directory where jobs have written their output to.
     out_dir : str
         Path to the output directory which will represent the
         light-field-geometry.
+    merlict_reduce_path : str (default: None)
+        Path to the executable. In merlict, reducing the results of the jobs.
+        If None, the path is looked up in the user's configfile.
     """
+    if merlict_reduce_path is None:
+        merlict_reduce_path = configfile.read()[
+            "merlict-plenoscope-calibration-reduce"
+        ]
+
     return subprocess.call(
         [
             merlict_reduce_path,

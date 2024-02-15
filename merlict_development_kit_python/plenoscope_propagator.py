@@ -2,18 +2,19 @@ import subprocess
 import json_utils
 import photon_spectra
 import numpy as np
+from . import configfile
 
 
 def plenoscope_propagator(
     corsika_run_path,
     output_path,
     light_field_geometry_path,
-    merlict_plenoscope_propagator_path,
     merlict_plenoscope_propagator_config_path,
     random_seed,
     photon_origins,
     stdout_path,
     stderr_path,
+    merlict_plenoscope_propagator_path=None,
 ):
     """
     Calls the merlict Cherenkov-plenoscope propagation
@@ -27,8 +28,6 @@ def plenoscope_propagator(
         Path to output directory
     light_field_geometry_path : str
         Path to instrument's light-field calibration.
-    merlict_plenoscope_propagator_path : path
-        Path to the merlict executable.
     merlict_plenoscope_propagator_config_path : path
         Path to the config file which controls the night-sky-background
         flux and the photo-detection efficiency of the instrument.
@@ -40,11 +39,19 @@ def plenoscope_propagator(
         Path to write merlict's stdout to.
     stderr_path : str
         Path to write merlict's stderr to.
+    merlict_plenoscope_propagator_path : str (default: None)
+        Path to the merlict executable.
+        If None, the path is looked up in the user's configfile.
 
     Returns
     -------
     merlict's return code : int
     """
+    if merlict_plenoscope_propagator_path is None:
+        merlict_plenoscope_propagator_path = configfile.read()[
+            "merlict-plenoscope-propagation"
+        ]
+
     with open(stdout_path, "w") as out, open(stderr_path, "w") as err:
         call = [
             merlict_plenoscope_propagator_path,
