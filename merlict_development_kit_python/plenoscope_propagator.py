@@ -2,6 +2,8 @@ import subprocess
 import json_utils
 import photon_spectra
 import numpy as np
+import os
+import shutil
 from . import configfile
 
 
@@ -70,6 +72,69 @@ def plenoscope_propagator(
             call.append("--all_truth")
         mct_rc = subprocess.call(call, stdout=out, stderr=err)
     return mct_rc
+
+
+def plenoscope_propagator_raw_photons(
+    input_path,
+    output_path,
+    light_field_geometry_path,
+    merlict_plenoscope_propagator_config_path,
+    random_seed=0,
+    merlict_plenoscope_raw_photon_propagation_path=None,
+):
+    """
+    Calls the merlict Cherenkov-plenoscope propagation for raw photons
+    and saves the stdout and stderr
+
+    Parameters
+    ----------
+    input_path : str
+        Path to the raw photons.
+    output_path : str
+        Path to output directory
+    light_field_geometry_path : str
+        Path to instrument's light-field calibration.
+    merlict_plenoscope_propagator_config_path : path
+        Path to the config file which controls the night-sky-background
+        flux and the photo-detection efficiency of the instrument.
+    random_seed : int
+        Seed for merlict.
+    merlict_plenoscope_propagator_path : str (default: None)
+        Path to the merlict executable.
+        If None, the path is looked up in the user's configfile.
+
+    Returns
+    -------
+    merlict's return code : int
+    """
+    if merlict_plenoscope_raw_photon_propagation_path is None:
+        merlict_plenoscope_raw_photon_propagation_path = configfile.read()[
+            "merlict-plenoscope-raw-photon-propagation"
+        ]
+
+    if os.path.exists(output_path):
+        shutil.rmtree(output_path)
+
+    mct_propagate_call = [
+        merlict_plenoscope_raw_photon_propagation_path,
+        "-l",
+        light_field_geometry_path,
+        "-c",
+        merlict_plenoscope_propagator_config_path,
+        "-i",
+        input_path,
+        "-o",
+        output_path,
+        "--all_truth",
+        "-r",
+        str(random_seed),
+    ]
+
+    o_path = output_path + ".stdout.txt"
+    e_path = output_path + ".stderr.txt"
+    with open(o_path, "wt") as fo, open(e_path, "wt") as fe:
+        rc = subprocess.call(mct_propagate_call, stdout=fo, stderr=fe)
+    return rc
 
 
 def read_plenoscope_geometry(merlict_scenery_path):
