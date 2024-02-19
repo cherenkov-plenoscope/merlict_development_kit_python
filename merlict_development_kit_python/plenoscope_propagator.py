@@ -90,6 +90,17 @@ def plenoscope_propagator_raw_photons(
     ----------
     input_path : str
         Path to the raw photons.
+        Raw photons is a text format with space seperated values in each line.
+        Every line is a photon. Every line has eight values to describe the
+        Order of the space seperated values in each line:
+            1) id (int)
+            2) support.x (float)
+            3) support.y (float)
+            4) support.z (float)
+            5) direction.x (float)
+            6) direction.y (float)
+            7) direction.z (float)
+            8) wavelength (float)
     output_path : str
         Path to output directory
     light_field_geometry_path : str
